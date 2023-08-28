@@ -13,12 +13,16 @@ export class ConsumerService implements OnApplicationShutdown {
   });
   private readonly consumers: Consumer[] = [];
 
-  async consume(topic: ConsumerSubscribeTopics, config: ConsumerRunConfig) {
-    const consumer = this.kafka.consumer({ groupId: 'test-group' });
-    await consumer.connect();
-    await consumer.subscribe(topic);
-    await consumer.run(config);
-    this.consumers.push(consumer);
+  async consume(topics: ConsumerSubscribeTopics, config: ConsumerRunConfig) {
+    try {
+      const consumer = this.kafka.consumer({ groupId: 'nestjs' });
+      await consumer.connect();
+      await consumer.subscribe(topics);
+      await consumer.run(config);
+      this.consumers.push(consumer);
+    } catch (error) {
+      console.error('Error setting up Kafka consumer:', error);
+    }
   }
 
   async onApplicationShutdown() {
